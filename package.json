@@ -1,0 +1,32 @@
+{
+  "name": "task-master",
+  "version": "0.0.1",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simonsg7/TaskMaster-backend.git"
+  },
+  "author": "SSG",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/simonsg7/TaskMaster-backend/issues"
+  },
+  "homepage": "https://github.com/simonsg7/TaskMaster-backend#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0",
+    "sequelize": "^6.37.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
