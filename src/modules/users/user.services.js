@@ -171,9 +171,7 @@ class UserServices {
     async delete(req, res){
         const { id } = req.params
         const response = await User.destroy({
-            where: {
-                id
-            },
+            where: { id },
         });
 
         res.status(200).json({

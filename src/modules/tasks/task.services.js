@@ -1,22 +1,20 @@
 // import bcrypt from 'bcryptjs';
 // import sequelize from '../../../dataBase/conexion.js';
 import Task from '../../../models/Model.tasks.js';
-import CategoryTask from '../../../models/Model.category_tasks.js';
 import usersDetail from '../../../models/Model.users_details.js';
+import Users from '../../../models/Model.user.js'
 import '../../../dataBase/association.js';
 
 class TaskServices {
 
     // Consultar todo
-    async getAll(req, res){
+    async getAllTasks(req, res){
         const response = await Task.findAll({
-            attributes: ["name", "priority", "expectation_date", "state"],
+            attributes: [ "name", "category", "priority", "expectation_date", "state" ],
             include: {
                 model: usersDetail,
-                attributes: [ "first_name", "last_name" ],
-                model: CategoryTask,
-                attributes: [ "category" ]
-            },
+                attributes: [ "first_name", "last_name" ]
+            }
         });
         
         res.status(200).json({
@@ -24,15 +22,91 @@ class TaskServices {
         })
     }
 
+    // Consultar todas las tareas de un usuario por id de usuario
+    async getAllTasksByUserId(req, res) {
+        const { id } = req.params;
+        const user = await Users.findOne({
+            where: { id }
+        });
+        
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+        
+        const userDetail = await usersDetail.findOne({
+            where: { user_id: user.id }
+        });
+        
+        if (!userDetail) { res.status(404).json({ message: 'User detail not found' });
+            return;
+        }
+        
+        const response = await Task.findAll({
+            where: { user_detail_id: userDetail.id },
+            attributes: [ "name", "category", "priority", "expectation_date", "state" ],
+            include: {
+                model: usersDetail,
+                attributes: [ "first_name", "last_name" ]
+            }
+        });
+        
+        res.status(200).json({
+            response
+        })
+    }
+
+    // Consultar una sola tarea de un usuario específico
+    async getTaskByUserId(req, res) {
+        const { id } = req.params; // id del usuario
+        const { task_id } = req.body; // id de la tarea
+    
+        const user = await Users.findOne({
+            where: { id }
+        });
+    
+        if (!user) {
+            res.status(404).json({ message: 'User  not found' });
+            return;
+        }
+    
+        const userDetail = await usersDetail.findOne({
+            where: { user_id: user.id }
+        });
+    
+        if (!userDetail) {
+            res.status(404).json({ message: 'User  detail not found' });
+            return;
+        }
+    
+        const task = await Task.findOne({
+            where: { id: task_id, user_detail_id: userDetail.id },
+            attributes: [ "name", "category", "priority", "expectation_date", "state" ],
+            include: {
+                model: usersDetail,
+                attributes: [ "first_name", "last_name" ]
+            }
+        });
+    
+        if (!task) {
+            res.status(404).json({ message: 'Task not found' });
+            return;
+        }
+    
+        res.status(200).json({
+            task
+        });
+    }
+
     // // Consultar uno
     // async getById(req, res){
-    //     const {id} = req.params
-    //     const response = await User.findOne({ 
+    //     const { id } = req.params
+    //     const response = await Task.findOne({ 
     //         where: { id },
-    //         attributes: ["id", "email"],
+    //         attributes: [ "name", "priority", "expectation_date", "state" ],
     //         include: {
-    //             model: usersDetail,
-    //             attributes: [ "first_name", "last_name", "phone" ],
+    //             model: CategoryTask,
+    //             attributes: [ "first_name", "last_name" ],
     //         },
     //     });
         
@@ -53,7 +127,7 @@ class TaskServices {
     //             try {
     //                 const salt = bcrypt.genSaltSync();     // Se usa para encriptar la contraseña
     //                 const passwordHash = bcrypt.hashSync(password, salt); // Se usa para encriptar la contraseña
-                    
+    
     //                 const createUser = await User.create({ email, password: passwordHash }, { transaction });
     //                 await usersDetail.create({ first_name, last_name, type_document, number_document, phone, user_id: createUser.id }, { transaction });
 

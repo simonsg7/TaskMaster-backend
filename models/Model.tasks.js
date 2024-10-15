@@ -13,6 +13,11 @@ Task.init({
         type: DataTypes.STRING,
         allowNull: false
     },
+    category: {
+        type: DataTypes.ENUM,
+        values: [ 'Trabajo', 'Personal', 'Estudio', 'Finanzas', 'Salud y bienestar', 'Viajes', 'Hogar', 'Social' ],
+        allowNull: false
+    },
     priority: {
         type: DataTypes.ENUM,
         values: ['Alta', 'Media', 'Baja'],

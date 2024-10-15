@@ -2,7 +2,6 @@
 import User from '../models/Model.user.js';
 import usersDetail from '../models/Model.users_details.js';
 import Task from '../models/Model.tasks.js';
-import CategoryTask from '../models/Model.category_tasks.js';
 
 // One to one 
 // User - UserDetail
@@ -30,19 +29,6 @@ usersDetail.hasMany(Task, {
 });
 Task.belongsTo(usersDetail, {
     foreignKey: 'user_detail_id'
-});
-
-// Task - CategoryTask
-CategoryTask.hasMany(Task, {
-    foreignKey: {
-        name: 'category_task_id',
-        allowNull: false
-    },
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-});
-Task.belongsTo(CategoryTask, {
-    foreignKey: 'category_task_id'
 });
 
 // const createTables = async () => {

@@ -4,9 +4,13 @@ import TaskServices from './task.services.js';
 const router = express.Router();
 const objTask = new TaskServices();
 
-router.get('/all', objTask.getAll);
+router.get('/all', objTask.getAllTasks);
 
-// router.get('/byid/:id', objTask.getById);
+router.get('/byid/:id', objTask.getAllTasksByUserId);
+
+router.get('/task/:id', objTask.getTaskByUserId);
+
+// router.get('/taskbyid/:userId', objTask.getTaskByUserId);
 
 // router.post('/create', objTask.create);
 
