@@ -25,7 +25,7 @@ Task.init({
     },
     expectation_date: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
     },
     state: {
         type: DataTypes.ENUM,

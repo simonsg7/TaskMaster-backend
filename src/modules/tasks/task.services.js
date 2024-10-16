@@ -58,8 +58,8 @@ class TaskServices {
 
     // Consultar una sola tarea de un usuario específico
     async getTaskByUserId(req, res) {
-        const { id } = req.params; // id del usuario
-        const { task_id } = req.body; // id de la tarea
+        const { id } = req.params;
+        const { task_id } = req.body;
     
         const user = await Users.findOne({
             where: { id }
@@ -98,73 +98,27 @@ class TaskServices {
         });
     }
 
-    // // Consultar uno
-    // async getById(req, res){
-    //     const { id } = req.params
-    //     const response = await Task.findOne({ 
-    //         where: { id },
-    //         attributes: [ "name", "priority", "expectation_date", "state" ],
-    //         include: {
-    //             model: CategoryTask,
-    //             attributes: [ "first_name", "last_name" ],
-    //         },
-    //     });
+    // Crear Task
+    create(req, res){
+        const { name, category, priority, expectation_date, state, user_detail_id } = req.body
         
-    //     res.status(200).json({
-    //         response
-    //     })
-    // }
+        try {
+            Task.create({ name, category, priority, expectation_date, state, user_detail_id });
 
-    // // Crear User
-    // async create(req, res){
-    //     const { email, password, first_name, last_name, type_document, number_document, phone } = req.body
-        
-    //     const userExist = await User.findOne({ where: {email} }); // Verificar si el usuario, ya existe por medio del email.
-    //     if (userExist === null) {
-    //         try {
-    //             const transaction = await sequelize.transaction();
-
-    //             try {
-    //                 const salt = bcrypt.genSaltSync();     // Se usa para encriptar la contraseña
-    //                 const passwordHash = bcrypt.hashSync(password, salt); // Se usa para encriptar la contraseña
-    
-    //                 const createUser = await User.create({ email, password: passwordHash }, { transaction });
-    //                 await usersDetail.create({ first_name, last_name, type_document, number_document, phone, user_id: createUser.id }, { transaction });
-
-    //                 await transaction.commit();
-
-    //                 res.status(201).json({
-    //                     ok: true,
-    //                     status: 201,
-    //                     message: 'User created',
-    //                     response: createUser
-    //                 });
-    //             } catch (error) {
-    //                 await transaction.rollback();
-    //                 res.status(500).json({
-    //                     ok: false,
-    //                     status: 500,
-    //                     message: 'Error al crear usuario',
-    //                     error: error.message
-    //                 });
-    //             }
-    //         } catch (error) {
-    //             console.error(error);
-    //             res.status(500).json({
-    //                 ok: false,
-    //                 status: 500,
-    //                 message: 'Error al crear usuario',
-    //                 error: error.message
-    //             });
-    //         }
-    //     } else {
-    //         res.status(200).json({
-    //             ok: true,
-    //             status: 200,
-    //             message: 'El usuario ya esta registrado',
-    //         });
-    //     }
-    // }
+            res.status(201).json({
+                ok: true,
+                status: 201,
+                message: 'Task created'
+            });
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                status: 500,
+                message: 'Error al crear tarea',
+                error: error.message
+            });
+        }
+    }
 
     // // Actualizar User
     // async update(req, res) {

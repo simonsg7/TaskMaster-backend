@@ -10,9 +10,7 @@ router.get('/byid/:id', objTask.getAllTasksByUserId);
 
 router.get('/task/:id', objTask.getTaskByUserId);
 
-// router.get('/taskbyid/:userId', objTask.getTaskByUserId);
-
-// router.post('/create', objTask.create);
+router.post('/create', objTask.create);
 
 // router.put('/update/:id', objTask.update);
 
