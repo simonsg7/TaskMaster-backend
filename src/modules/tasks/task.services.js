@@ -120,83 +120,35 @@ class TaskServices {
         }
     }
 
-    // // Actualizar User
-    // async update(req, res) {
-    //     const { id } = req.params;
-    //     const { email, password, first_name, last_name, type_document, number_document, phone } = req.body;
+    // Actualizar Task
+    async update(req, res) {
+        const { id } = req.params;
+        const { name, category, priority, expectation_date, state } = req.body;
 
-    //     try {
-    //         const user = await User.findByPk(id);
-    //         if (!user) {
-    //             res.status(404).json({
-    //                 ok: false,
-    //                 status: 404,
-    //                 message: 'User not found',
-    //             });
-    //             return;
-    //         }
+        try {
+            const task = await Task.findOne({ where: { id } });
 
-    //         const transaction = await sequelize.transaction();
+            if (!task) {
+                return res.status(404).json({ message: 'Task not found' });
+            }
 
-    //         try {
-    //             if (email) {
-    //                 user.email = email;
-    //             }
-    //             if (password) {
-    //                 const salt = bcrypt.genSaltSync();
-    //                 const passwordHash = bcrypt.hashSync(password, salt);
-    //                 user.password = passwordHash;
-    //             }
+            await Task.update(
+                { name, category, priority, expectation_date, state },
+                { where: { id } }
+            );
 
-    //             await user.save({ transaction });
-
-    //             const userDetail = await usersDetail.findOne({ where: { user_id: id } });
-    //             if (userDetail) {
-    //                 if (first_name) {
-    //                     userDetail.first_name = first_name;
-    //                 }
-    //                 if (last_name) {
-    //                     userDetail.last_name = last_name;
-    //                 }
-    //                 if (type_document) {
-    //                     userDetail.type_document = type_document;
-    //                 }
-    //                 if (number_document) {
-    //                     userDetail.number_document = number_document;
-    //                 }
-    //                 if (phone) {
-    //                     userDetail.phone = phone;
-    //                 }
-    //                 await userDetail.save({ transaction });
-    //             }
-
-    //             await transaction.commit();
-
-    //             res.status(200).json({
-    //                 ok: true,
-    //                 status: 200,
-    //                 message: 'User updated',
-    //                 response: user,
-    //             });
-    //         } catch (error) {
-    //             await transaction.rollback();
-    //             res.status(500).json({
-    //                 ok: false,
-    //                 status: 500,
-    //                 message: 'Error al actualizar usuario',
-    //                 error: error.message,
-    //             });
-    //         }
-    //     } catch (error) {
-    //         console.error(error);
-    //         res.status(500).json({
-    //             ok: false,
-    //             status: 500,
-    //             message: 'Error al actualizar usuario',
-    //             error: error.message,
-    //         });
-    //     }
-    // }
+            res.status(200).json({
+                ok: true,
+                message: 'Task updated successfully'
+            });
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                message: 'Error updating task',
+                error: error.message
+            });
+        }
+    }
 
     // // Eliminar User
     // async delete(req, res){
