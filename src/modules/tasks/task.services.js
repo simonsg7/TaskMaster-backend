@@ -150,22 +150,20 @@ class TaskServices {
         }
     }
 
-    // // Eliminar User
-    // async delete(req, res){
-    //     const { id } = req.params
-    //     const response = await User.destroy({
-    //         where: {
-    //             id
-    //         },
-    //     });
+    // Eliminar User
+    async delete(req, res){
+        const { id } = req.params
+        const response = await Task.destroy({
+            where: { id },
+        });
 
-    //     res.status(200).json({
-    //         ok: true,
-    //         status: 200,
-    //         message: 'User deleted',
-    //         data: response
-    //     })
-    // }
+        res.status(200).json({
+            ok: true,
+            status: 200,
+            message: 'Task deleted',
+            data: response
+        })
+    }
 }
 
 export default TaskServices;

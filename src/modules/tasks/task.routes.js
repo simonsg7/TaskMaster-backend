@@ -14,6 +14,6 @@ router.post('/create', objTask.create);
 
 router.put('/update/:id', objTask.update);
 
-// router.delete('/delete/:id', objTask.delete);
+router.delete('/delete/:id', objTask.delete);
 
 export default router;
