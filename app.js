@@ -1,6 +1,6 @@
 import express from 'express';
 import routers from './router/index.js';
-import createTables from './dataBase/association.js';
+// import createTables from './dataBase/association.js';
 
 const app = express();
 
@@ -9,7 +9,7 @@ app.use(express.json());
 
 routers(app);
 
-createTables();
+// createTables();
 
 app.listen(app.get('port'), () => {
     console.log(`Listening on port ${app.get('port')}`);
