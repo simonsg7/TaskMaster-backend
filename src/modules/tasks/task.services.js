@@ -1,5 +1,3 @@
-// import bcrypt from 'bcryptjs';
-// import sequelize from '../../../dataBase/conexion.js';
 import Task from '../../../models/Model.tasks.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import Users from '../../../models/Model.user.js'

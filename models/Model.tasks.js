@@ -30,7 +30,7 @@ Task.init({
     state: {
         type: DataTypes.ENUM,
         values: ['Pendiente', 'En progreso', 'Completa'],
-        allowNull: false
+        allowNull: true
     },
 }, {
     sequelize,
