@@ -29,8 +29,8 @@ Task.init({
     },
     state: {
         type: DataTypes.ENUM,
-        values: ['Pendiente', 'En progreso', 'Completa'],
-        allowNull: true
+        values: ['Diario', 'Pendiente', 'En progreso', 'Completa'],
+        allowNull: false
     },
 }, {
     sequelize,

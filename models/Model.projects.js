@@ -13,6 +13,25 @@ Project.init({
         type: DataTypes.STRING,
         allowNull: false
     },
+    category: {
+        type: DataTypes.ENUM,
+        values: [ 'Trabajo', 'Personal', 'Estudio', 'Finanzas', 'Salud y bienestar', 'Viajes', 'Hogar', 'Social' ],
+        allowNull: false
+    },
+    priority: {
+        type: DataTypes.ENUM,
+        values: ['Alta', 'Media', 'Baja'],
+        allowNull: false
+    },
+    expectation_date: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    state: {
+        type: DataTypes.ENUM,
+        values: ['Pendiente', 'En progreso', 'Completa'],
+        allowNull: false
+    },
     description: {
         type: DataTypes.TEXT,
         allowNull: true
