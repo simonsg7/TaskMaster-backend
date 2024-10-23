@@ -6,6 +6,10 @@ const objProject = new ProjectServices();
 
 router.get('/all', objProject.getAllProjects);
 
+router.get('/projectbyid/:id', objProject.getProjectById);
+
+router.get('/projectsbyuserid/:id', objProject.getProjectsByUserId);
+
 // router.get('/byid/:id', objTask.getAllTasksByUserId);
 
 // router.get('/task/:id', objTask.getTaskByUserId);
