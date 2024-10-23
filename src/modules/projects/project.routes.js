@@ -10,14 +10,10 @@ router.get('/projectbyid/:id', objProject.getProjectById);
 
 router.get('/projectsbyuserid/:id', objProject.getProjectsByUserId);
 
-// router.get('/byid/:id', objTask.getAllTasksByUserId);
+router.post('/create', objProject.create);
 
-// router.get('/task/:id', objTask.getTaskByUserId);
+router.put('/update/:id', objProject.updateProject);
 
-// router.post('/create', objTask.create);
-
-// router.put('/update/:id', objTask.update);
-
-// router.delete('/delete/:id', objTask.delete);
+router.delete('/delete/:id', objProject.deleteProject);
 
 export default router;

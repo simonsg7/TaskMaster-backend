@@ -1,12 +1,14 @@
-import Project from '../../../models/Model.projects.js';
+import sequelize from '../../../dataBase/conexion.js';
+import '../../../dataBase/association.js';
+import Users from '../../../models/Model.user.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import Task from '../../../models/Model.tasks.js';
-import Users from '../../../models/Model.user.js';
-import '../../../dataBase/association.js';
+import Project from '../../../models/Model.projects.js';
+import UserProject from '../../../models/Model.usersDetails_projects.js';
 
 class ProjectServices {
 
-    // Consultar todo
+    // Consultar todos los proyectos
     async getAllProjects (req, res) {
         try {
             const response = await Project.findAll({
@@ -106,72 +108,92 @@ class ProjectServices {
         }
     }
 
-    // Crear Task
-    // create(req, res){
-    //     const { name, category, priority, expectation_date, state, user_detail_id } = req.body
-        
-    //     try {
-    //         Task.create({ name, category, priority, expectation_date, state, user_detail_id });
+    // Crear proyecto
+    async create(req, res) {
+        const { name, category, priority, expectation_date, state, description, user_detail_id } = req.body;
 
-    //         res.status(201).json({
-    //             ok: true,
-    //             status: 201,
-    //             message: 'Task created'
-    //         });
-    //     } catch (error) {
-    //         res.status(500).json({
-    //             ok: false,
-    //             status: 500,
-    //             message: 'Error al crear tarea',
-    //             error: error.message
-    //         });
-    //     }
-    // }
+        if (!user_detail_id) {
+            return res.status(400).json({
+                ok: false,
+                status: 400,
+                message: 'user detail es requerido'
+            });
+        }
 
-    // Actualizar Task
-    // async update(req, res) {
-    //     const { id } = req.params;
-    //     const { name, category, priority, expectation_date, state } = req.body;
+        const transaction = await sequelize.transaction();
 
-    //     try {
-    //         const task = await Task.findOne({ where: { id } });
+        try {
+            const newProject = await Project.create({ name, category, priority, expectation_date, state, description }, { transaction });
 
-    //         if (!task) {
-    //             return res.status(404).json({ message: 'Task not found' });
-    //         }
+            await UserProject.create({  // Asociar el proyecto con el usuario en la tabla intermedia
+                user_detail_id: user_detail_id,
+                project_id: newProject.id
+            }, { transaction });
 
-    //         await Task.update(
-    //             { name, category, priority, expectation_date, state },
-    //             { where: { id } }
-    //         );
+            await transaction.commit();
 
-    //         res.status(200).json({
-    //             ok: true,
-    //             message: 'Task updated successfully'
-    //         });
-    //     } catch (error) {
-    //         res.status(500).json({
-    //             ok: false,
-    //             message: 'Error updating task',
-    //             error: error.message
-    //         });
-    //     }
-    // }
+            res.status(201).json({
+                ok: true,
+                status: 201,
+                message: 'Project created',
+                project: newProject
+            });
 
-    // Eliminar User
-    // async delete(req, res){
-    //     const { id } = req.params
-    //     const response = await Task.destroy({
-    //         where: { id },
-    //     });
+        } catch (error) {
+            await transaction.rollback();
+            res.status(500).json({
+                ok: false,
+                status: 500,
+                message: 'Error al crear proyecto',
+                error: error.message
+            });
+        }
+    }
 
-    //     res.status(200).json({
-    //         ok: true,
-    //         status: 200,
-    //         message: 'Task deleted',
-    //         data: response
-    //     })
-    // }
+    // Actualizar proyecto
+    async updateProject(req, res) {
+        const { id } = req.params;
+        const { name, category, priority, expectation_date, state, description } = req.body;
+
+        try {
+            const task = await Project.findOne({ where: { id } });
+
+            if (!task) {
+                return res.status(404).json({ message: 'Project not found' });
+            }
+
+            await Project.update(
+                { name, category, priority, expectation_date, state, description },
+                { where: { id } }
+            );
+
+            res.status(200).json({
+                ok: true,
+                message: 'Project updated successfully'
+            });
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                message: 'Error updating project',
+                error: error.message
+            });
+        }
+    }
+
+    // Eliminar proyecto
+    async deleteProject(req, res){
+        const { id } = req.params
+        const response = await Project.destroy({
+            where: { id },
+        });
+
+        res.status(200).json({
+            ok: true,
+            status: 200,
+            message: 'Project deleted',
+            data: response
+        })
+    }
 }
 
 export default ProjectServices;
