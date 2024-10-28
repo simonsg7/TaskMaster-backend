@@ -1,19 +1,20 @@
 import express from 'express';
 import ProjectServices from './project.services.js';
+import { verifyToken } from '../../middlewares/auth.middleware.js';
 
 const router = express.Router();
 const objProject = new ProjectServices();
 
-router.get('/all', objProject.getAllProjects);
+router.get('/all', verifyToken, objProject.getAllProjects);
 
-router.get('/projectbyid/:id', objProject.getProjectById);
+router.get('/projectbyid/:id', verifyToken, objProject.getProjectById);
 
-router.get('/projectsbyuserid/:id', objProject.getProjectsByUserId);
+router.get('/projectsbyuserid/:id', verifyToken, objProject.getProjectsByUserId);
 
-router.post('/create', objProject.create);
+router.post('/create', verifyToken, objProject.create);
 
-router.put('/update/:id', objProject.updateProject);
+router.put('/update/:id', verifyToken, objProject.updateProject);
 
-router.delete('/delete/:id', objProject.deleteProject);
+router.delete('/delete/:id', verifyToken, objProject.deleteProject);
 
 export default router;

@@ -1,17 +1,18 @@
 import express from 'express';
 import UserServices from './user.services.js';
+import { verifyToken } from '../../middlewares/auth.middleware.js';
 
 const router = express.Router();
 const objUser = new UserServices();
 
-router.get('/all', objUser.getAll);
-
-router.get('/byid/:id', objUser.getById);
-
+// Rutas públicas
+router.post('/login', objUser.login);
 router.post('/create', objUser.create);
 
-router.put('/update/:id', objUser.update);
-
-router.delete('/delete/:id', objUser.delete);
+// Rutas protegidas
+router.get('/all', verifyToken, objUser.getAll);
+router.get('/byid/:id', verifyToken, objUser.getById);
+router.put('/update/:id', verifyToken, objUser.update);
+router.delete('/delete/:id', verifyToken, objUser.delete);
 
 export default router;

@@ -1,8 +1,12 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import sequelize from '../../../dataBase/conexion.js';
 import User from '../../../models/Model.user.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import '../../../dataBase/association.js';
+
+dotenv.config();
 
 class UserServices {
 
@@ -54,22 +58,26 @@ class UserServices {
                     const createUser = await User.create({ email, password: passwordHash }, { transaction });
                     await usersDetail.create({ first_name, last_name, type_document, number_document, phone, user_id: createUser.id }, { transaction });
 
+                    const token = jwt.sign( // Genera Token
+                        { 
+                            id: createUser.id,
+                            email: createUser.email
+                        },
+                        process.env.JWT_SECRET
+                    );
+
                     await transaction.commit();
 
                     res.status(201).json({
                         ok: true,
                         status: 201,
                         message: 'User created',
-                        response: createUser
+                        response: createUser,
+                        token
                     });
                 } catch (error) {
                     await transaction.rollback();
-                    res.status(500).json({
-                        ok: false,
-                        status: 500,
-                        message: 'Error al crear usuario',
-                        error: error.message
-                    });
+                    throw error;
                 }
             } catch (error) {
                 console.error(error);
@@ -85,6 +93,60 @@ class UserServices {
                 ok: true,
                 status: 200,
                 message: 'El usuario ya esta registrado',
+            });
+        }
+    }
+
+    // Login
+    async login(req, res) {
+        const { email, password } = req.body;
+
+        try {
+            const user = await User.findOne({ 
+                where: { email },
+                include: {
+                    model: usersDetail,
+                    attributes: ['first_name', 'last_name']
+                }
+            });
+
+            if (!user) {
+                return res.status(404).json({
+                    ok: false,
+                    message: 'Usuario no encontrado'
+                });
+            }
+
+            const validPassword = bcrypt.compareSync(password, user.password);
+            if (!validPassword) {
+                return res.status(401).json({
+                    ok: false,
+                    message: 'Contraseña incorrecta'
+                });
+            }
+
+            const token = jwt.sign( // Genera token
+                { 
+                    id: user.id,
+                    email: user.email
+                },
+                process.env.JWT_SECRET
+            );
+
+            res.status(200).json({
+                ok: true,
+                user: {
+                    first_name: user.users_detail?.first_name,
+                    last_name: user.users_detail?.last_name
+                },
+                token
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                message: 'Error en el servidor',
+                error: error.message
             });
         }
     }
