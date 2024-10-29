@@ -11,7 +11,7 @@ dotenv.config();
 class UserServices {
 
     // Consultar todo
-    async getAll(req, res){
+    async getAll (req, res){
         const response = await User.findAll({
             attributes: ["id", "email"],
             include: {
@@ -43,7 +43,7 @@ class UserServices {
     }
 
     // Crear User
-    async create(req, res){
+    async create (req, res){
         const { email, password, first_name, last_name, type_document, number_document, phone } = req.body
         
         const userExist = await User.findOne({ where: {email} }); // Verificar si el usuario, ya existe por medio del email.
@@ -98,7 +98,7 @@ class UserServices {
     }
 
     // Login
-    async login(req, res) {
+    async login (req, res) {
         const { email, password } = req.body;
 
         try {
@@ -152,7 +152,7 @@ class UserServices {
     }
 
     // Actualizar User
-    async update(req, res) {
+    async update (req, res) {
         const { id } = req.params;
         const { email, password, first_name, last_name, type_document, number_document, phone } = req.body;
 
@@ -230,7 +230,7 @@ class UserServices {
     }
 
     // Eliminar User
-    async delete(req, res){
+    async delete (req, res){
         const { id } = req.params
         const response = await User.destroy({
             where: { id },

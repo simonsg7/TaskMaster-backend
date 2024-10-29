@@ -11,7 +11,21 @@ class ProjectServices {
     // Consultar todos los proyectos
     async getAllProjects (req, res) {
         try {
+            const { priority, state, category } = req.query;
+            
+            let Clause = {};
+            if (priority) {
+                Clause.priority = priority;
+            }
+            if (state) {
+                Clause.state = state;
+            }
+            if (category) {
+                Clause.category = category;
+            }
+
             const response = await Project.findAll({
+                where: Clause,
                 attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
                 include: [
                     {
@@ -34,7 +48,10 @@ class ProjectServices {
                 response
             });
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            res.status(500).json({
+                message: 'Error al obtener los proyectos',
+                error: error.message
+            });
         }
     }
 
@@ -73,17 +90,30 @@ class ProjectServices {
 
     // Consultar todos los proyectos relacionados a un usuario por users.id
     async getProjectsByUserId (req, res) {
-        const { id } = req.params;
-        const user = await Users.findOne({
-            where: { id }
-        });
-        
-        if (!user) {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
-
         try {
+            const { id } = req.params;
+            const { category, priority, state } = req.query;
+
+            const user = await Users.findOne({
+                where: { id }
+            });
+        
+            if (!user) {
+                res.status(404).json({ message: 'User not found' });
+                return;
+            }
+
+            let whereClause = {};
+            if (category) {
+                whereClause.category = category;
+            }
+            if (priority) {
+                whereClause.priority = priority;
+            }
+            if (state) {
+                whereClause.state = state;
+            }
+
             const userDetails = await usersDetail.findOne({
                 where: { user_id: id },
                 attributes: ["first_name", "last_name"],
@@ -104,7 +134,10 @@ class ProjectServices {
                 userDetails
             ]);
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            res.status(500).json({
+                message: 'Error al obtener los proyectos del usuario',
+                error: error.message
+            });
         }
     }
 

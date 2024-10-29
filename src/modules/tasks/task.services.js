@@ -6,53 +6,104 @@ import '../../../dataBase/association.js';
 class TaskServices {
 
     // Consultar todo
-    async getAllTasks(req, res){
-        const response = await Task.findAll({
-            attributes: [ "name", "category", "priority", "expectation_date", "state" ],
-            include: {
-                model: usersDetail,
-                attributes: [ "first_name", "last_name" ]
+    async getAllTasks(req, res) {
+        try {
+            const { priority, state, category } = req.query;
+            
+            let Clause = {};
+            if (priority) {
+                Clause.priority = priority;
             }
-        });
-        
-        res.status(200).json({
-            response
-        })
+            if (state) {
+                Clause.state = state;
+            }
+            if (category) {
+                Clause.category = category;
+            }
+    
+            const response = await Task.findAll({
+                where: Clause,
+                attributes: ["name", "category", "priority", "expectation_date", "state"],
+                include: {
+                    model: usersDetail,
+                    attributes: ["first_name", "last_name"]
+                }
+            });
+            
+            res.status(200).json({
+                ok: true,
+                response
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: 'Error al obtener las tareas',
+                error: error.message
+            });
+        }
     }
 
     // Consultar todas las tareas de un usuario por id de usuario
     async getAllTasksByUserId(req, res) {
-        const { id } = req.params;
-        const user = await Users.findOne({
-            where: { id }
-        });
-        
-        if (!user) {
-            res.status(404).json({ message: 'User not found' });
-            return;
-        }
-        
-        const userDetail = await usersDetail.findOne({
-            where: { user_id: user.id }
-        });
-        
-        if (!userDetail) { res.status(404).json({ message: 'User detail not found' });
-            return;
-        }
-        
-        const response = await Task.findAll({
-            where: { user_detail_id: userDetail.id },
-            attributes: [ "name", "category", "priority", "expectation_date", "state" ],
-            include: {
-                model: usersDetail,
-                attributes: [ "first_name", "last_name" ]
+        try {
+            const { id } = req.params;
+            const { priority, state, category } = req.query;
+            
+            const user = await Users.findOne({
+                where: { id }
+            });
+            
+            if (!user) {
+                return res.status(404).json({ 
+                    ok: false,
+                    message: 'User not found' 
+                });
             }
-        });
-        
-        res.status(200).json({
-            response
-        })
+            
+            const userDetail = await usersDetail.findOne({
+                where: { user_id: user.id }
+            });
+            
+            if (!userDetail) {
+                return res.status(404).json({ 
+                    ok: false,
+                    message: 'User detail not found' 
+                });
+            }
+            
+            let Clause = {
+                user_detail_id: userDetail.id
+            };
+            if (priority) {
+                Clause.priority = priority;
+            }
+            if (state) {
+                Clause.state = state;
+            }
+            if (category) {
+                Clause.category = category;
+            }
+            
+            const response = await Task.findAll({
+                where: Clause,
+                attributes: ["name", "category", "priority", "expectation_date", "state"],
+                include: {
+                    model: usersDetail,
+                    attributes: ["first_name", "last_name"]
+                }
+            });
+            
+            res.status(200).json({
+                ok: true,
+                response
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: 'Error al obtener las tareas',
+                error: error.message
+            });
+        }
     }
+    
 
     // Consultar una sola tarea de un usuario específico
     async getTaskByUserId(req, res) {
