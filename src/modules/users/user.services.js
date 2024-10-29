@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { Op } from 'sequelize';
 import sequelize from '../../../dataBase/conexion.js';
 import User from '../../../models/Model.user.js';
 import usersDetail from '../../../models/Model.users_details.js';
@@ -12,17 +13,46 @@ class UserServices {
 
     // Consultar todo
     async getAll (req, res){
-        const response = await User.findAll({
-            attributes: ["id", "email"],
-            include: {
-                model: usersDetail,
-                attributes: [ "first_name", "last_name", "phone" ],
-            },
-        });
-        
-        res.status(200).json({
-            response
-        })
+        try {
+            const { name, email } = req.query;
+            
+            let emailClause = {};
+            let nameClause = {};
+    
+            if (email) {
+                emailClause.email = { [Op.like]: `%${email}%` };
+            }
+    
+            if (name) {
+                nameClause = {
+                    [Op.or]: [
+                        { first_name: { [Op.like]: `%${name}%` }},
+                        { last_name: { [Op.like]: `%${name}%` }}
+                    ]
+                };
+            }
+    
+            const response = await User.findAll({
+                where: emailClause,
+                attributes: ["id", "email"],
+                include: {
+                    model: usersDetail,
+                    where: Object.keys(nameClause).length > 0 ? nameClause : undefined,
+                    attributes: ["first_name", "last_name", "phone"],
+                },
+            });
+            
+            res.status(200).json({
+                ok: true,
+                response
+            });
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                message: 'Error al obtener usuarios',
+                error: error.message
+            });
+        }
     }
 
     // Consultar uno

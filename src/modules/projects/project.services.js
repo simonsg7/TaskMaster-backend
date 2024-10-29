@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import sequelize from '../../../dataBase/conexion.js';
 import '../../../dataBase/association.js';
 import Users from '../../../models/Model.user.js';
@@ -6,14 +7,21 @@ import Task from '../../../models/Model.tasks.js';
 import Project from '../../../models/Model.projects.js';
 import UserProject from '../../../models/Model.usersDetails_projects.js';
 
+const getCurrentDate = () => {
+    return new Date().toISOString().split('T')[0];
+};
+
 class ProjectServices {
 
     // Consultar todos los proyectos
     async getAllProjects (req, res) {
         try {
-            const { priority, state, category } = req.query;
+            const { name, priority, state, category, expectation_date_start, expectation_date } = req.query;
             
             let Clause = {};
+            if (name) {
+                Clause.name = { [Op.like]: `%${name}%` };
+            }
             if (priority) {
                 Clause.priority = priority;
             }
@@ -22,6 +30,17 @@ class ProjectServices {
             }
             if (category) {
                 Clause.category = category;
+            }
+
+            const startDate = expectation_date_start || getCurrentDate();
+            if (expectation_date) {
+                Clause.expectation_date = {
+                    [Op.between]: [startDate, expectation_date]
+                };
+            } else {
+                Clause.expectation_date = {
+                    [Op.gte]: startDate
+                };
             }
 
             const response = await Project.findAll({
@@ -47,6 +66,7 @@ class ProjectServices {
             res.status(200).json({
                 response
             });
+
         } catch (error) {
             res.status(500).json({
                 message: 'Error al obtener los proyectos',
@@ -92,7 +112,7 @@ class ProjectServices {
     async getProjectsByUserId (req, res) {
         try {
             const { id } = req.params;
-            const { category, priority, state } = req.query;
+            const { name, category, priority, state, expectation_date_start, expectation_date } = req.query;
 
             const user = await Users.findOne({
                 where: { id }
@@ -103,15 +123,29 @@ class ProjectServices {
                 return;
             }
 
-            let whereClause = {};
+            let Clause = {};
+            if (name) {
+                Clause.name = { [Op.like]: `%${name}%` };
+            }
             if (category) {
-                whereClause.category = category;
+                Clause.category = category;
             }
             if (priority) {
-                whereClause.priority = priority;
+                Clause.priority = priority;
             }
             if (state) {
-                whereClause.state = state;
+                Clause.state = state;
+            }
+
+            const startDate = expectation_date_start || getCurrentDate();
+            if (expectation_date) {
+                Clause.expectation_date = {
+                    [Op.between]: [startDate, expectation_date]
+                };
+            } else {
+                whereClause.expectation_date = {
+                    [Op.gte]: startDate
+                };
             }
 
             const userDetails = await usersDetail.findOne({
@@ -120,6 +154,7 @@ class ProjectServices {
                 include: [
                     {
                         model: Project,
+                        where: Clause,
                         attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
                         through: { attributes: [] }
                     }

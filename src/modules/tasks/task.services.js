@@ -1,16 +1,24 @@
+import { Op } from 'sequelize';
 import Task from '../../../models/Model.tasks.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import Users from '../../../models/Model.user.js'
 import '../../../dataBase/association.js';
+
+const getCurrentDate = () => {
+    return new Date().toISOString().split('T')[0];
+};
 
 class TaskServices {
 
     // Consultar todo
     async getAllTasks(req, res) {
         try {
-            const { priority, state, category } = req.query;
+            const { name, priority, state, category, expectation_date_start, expectation_date } = req.query;
             
             let Clause = {};
+            if (name) {
+                Clause.name = { [Op.like]: `%${name}%` };
+            }
             if (priority) {
                 Clause.priority = priority;
             }
@@ -21,6 +29,17 @@ class TaskServices {
                 Clause.category = category;
             }
     
+            const startDate = expectation_date_start || getCurrentDate();
+            if (expectation_date) {
+                Clause.expectation_date = {
+                    [Op.between]: [startDate, expectation_date]
+                };
+            } else {
+                Clause.expectation_date = {
+                    [Op.gte]: startDate
+                };
+            }
+
             const response = await Task.findAll({
                 where: Clause,
                 attributes: ["name", "category", "priority", "expectation_date", "state"],
@@ -46,7 +65,7 @@ class TaskServices {
     async getAllTasksByUserId(req, res) {
         try {
             const { id } = req.params;
-            const { priority, state, category } = req.query;
+            const { name, priority, state, category, expectation_date_start, expectation_date } = req.query;
             
             const user = await Users.findOne({
                 where: { id }
@@ -73,6 +92,9 @@ class TaskServices {
             let Clause = {
                 user_detail_id: userDetail.id
             };
+            if (name) {
+                Clause.name = { [Op.like]: `%${name}%` };
+            }
             if (priority) {
                 Clause.priority = priority;
             }
@@ -81,6 +103,17 @@ class TaskServices {
             }
             if (category) {
                 Clause.category = category;
+            }
+
+            const startDate = expectation_date_start || getCurrentDate();
+            if (expectation_date) {
+                Clause.expectation_date = {
+                    [Op.between]: [startDate, expectation_date]
+                };
+            } else {
+                Clause.expectation_date = {
+                    [Op.gte]: startDate
+                };
             }
             
             const response = await Task.findAll({
@@ -96,6 +129,7 @@ class TaskServices {
                 ok: true,
                 response
             });
+            
         } catch (error) {
             res.status(500).json({
                 message: 'Error al obtener las tareas',
@@ -104,7 +138,6 @@ class TaskServices {
         }
     }
     
-
     // Consultar una sola tarea de un usuario específico
     async getTaskByUserId(req, res) {
         const { id } = req.params;
