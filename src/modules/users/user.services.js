@@ -14,24 +14,6 @@ class UserServices {
     // Consultar todo
     async getAll (req, res){
         try {
-            const { name, email } = req.query;
-            
-            let emailClause = {};
-            let nameClause = {};
-    
-            if (email) {
-                emailClause.email = { [Op.like]: `%${email}%` };
-            }
-    
-            if (name) {
-                nameClause = {
-                    [Op.or]: [
-                        { first_name: { [Op.like]: `%${name}%` }},
-                        { last_name: { [Op.like]: `%${name}%` }}
-                    ]
-                };
-            }
-    
             const response = await User.findAll({
                 where: emailClause,
                 attributes: ["id", "email"],

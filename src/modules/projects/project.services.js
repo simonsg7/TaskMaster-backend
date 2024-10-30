@@ -16,33 +16,6 @@ class ProjectServices {
     // Consultar todos los proyectos
     async getAllProjects (req, res) {
         try {
-            const { name, priority, state, category, expectation_date_start, expectation_date } = req.query;
-            
-            let Clause = {};
-            if (name) {
-                Clause.name = { [Op.like]: `%${name}%` };
-            }
-            if (priority) {
-                Clause.priority = priority;
-            }
-            if (state) {
-                Clause.state = state;
-            }
-            if (category) {
-                Clause.category = category;
-            }
-
-            const startDate = expectation_date_start || getCurrentDate();
-            if (expectation_date) {
-                Clause.expectation_date = {
-                    [Op.between]: [startDate, expectation_date]
-                };
-            } else {
-                Clause.expectation_date = {
-                    [Op.gte]: startDate
-                };
-            }
-
             const response = await Project.findAll({
                 where: Clause,
                 attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
@@ -79,7 +52,6 @@ class ProjectServices {
     async getProjectsByUserId (req, res) {
         try {
             const { id } = req.params;
-            const { name, category, priority, state, expectation_date_start, expectation_date } = req.query;
 
             const user = await Users.findOne({
                 where: { id }
@@ -88,31 +60,6 @@ class ProjectServices {
             if (!user) {
                 res.status(404).json({ message: 'User not found' });
                 return;
-            }
-
-            let Clause = {};
-            if (name) {
-                Clause.name = { [Op.like]: `%${name}%` };
-            }
-            if (category) {
-                Clause.category = category;
-            }
-            if (priority) {
-                Clause.priority = priority;
-            }
-            if (state) {
-                Clause.state = state;
-            }
-
-            const startDate = expectation_date_start || getCurrentDate();
-            if (expectation_date) {
-                Clause.expectation_date = {
-                    [Op.between]: [startDate, expectation_date]
-                };
-            } else {
-                whereClause.expectation_date = {
-                    [Op.gte]: startDate
-                };
             }
 
             const userDetails = await usersDetail.findOne({
