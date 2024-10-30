@@ -74,40 +74,7 @@ class ProjectServices {
             });
         }
     }
-
-    // Consultar un proyecto por id
-    async getProjectById (req, res) {
-        const { id } = req.params;
-
-        try {
-            const response = await Project.findOne({
-                where: { id },
-                attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
-                include: [
-                    {
-                        model: usersDetail,
-                        attributes: ["first_name", "last_name"],
-                        through: { attributes: [] }
-                    },
-                    {
-                        model: Task,
-                        attributes: ["name", "category", "state"],
-                        include: {
-                            model: usersDetail,
-                            attributes: ["first_name", "last_name"]
-                        }
-                    },
-                ]
-            });
-            
-            res.status(200).json({
-                response
-            });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
-        }
-    }
-
+    
     // Consultar todos los proyectos relacionados a un usuario por users.id
     async getProjectsByUserId (req, res) {
         try {
@@ -175,6 +142,40 @@ class ProjectServices {
             });
         }
     }
+
+    // Consultar un proyecto por id
+    async getProjectById (req, res) {
+        const { id } = req.params;
+
+        try {
+            const response = await Project.findOne({
+                where: { id },
+                attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
+                include: [
+                    {
+                        model: usersDetail,
+                        attributes: ["first_name", "last_name"],
+                        through: { attributes: [] }
+                    },
+                    {
+                        model: Task,
+                        attributes: ["name", "category", "state"],
+                        include: {
+                            model: usersDetail,
+                            attributes: ["first_name", "last_name"]
+                        }
+                    },
+                ]
+            });
+            
+            res.status(200).json({
+                response
+            });
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    }
+
 
     // Crear proyecto
     async create(req, res) {

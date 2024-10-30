@@ -82,7 +82,7 @@ class UserServices {
                 const transaction = await sequelize.transaction();
 
                 try {
-                    const salt = bcrypt.genSaltSync();     // Se usa para encriptar la contraseña
+                    const salt = bcrypt.genSaltSync();
                     const passwordHash = bcrypt.hashSync(password, salt); // Se usa para encriptar la contraseña
                     
                     const createUser = await User.create({ email, password: passwordHash }, { transaction });
