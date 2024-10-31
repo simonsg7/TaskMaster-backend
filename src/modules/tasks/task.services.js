@@ -1,20 +1,19 @@
-import { Op } from 'sequelize';
 import Task from '../../../models/Model.tasks.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import Users from '../../../models/Model.user.js'
 import '../../../dataBase/association.js';
-
-const getCurrentDate = () => {
-    return new Date().toISOString().split('T')[0];
-};
+import { buildFilterClause } from '../../middlewares/filter.middleware.js';
+import { filterConfigs } from '../../config/filters.config.js';
 
 class TaskServices {
 
     // Consultar todo
     async getAllTasks(req, res) {
         try {
+            const filterClause = buildFilterClause(req.query, filterConfigs.task);
+
             const response = await Task.findAll({
-                where: Clause,
+                where: filterClause,
                 attributes: ["name", "category", "priority", "expectation_date", "state"],
                 include: {
                     model: usersDetail,
@@ -61,8 +60,11 @@ class TaskServices {
                 });
             }
             
+            const filterClause = buildFilterClause(req.query, filterConfigs.task);
+            filterClause.user_detail_id = userDetail.id;
+
             const response = await Task.findAll({
-                where: Clause,
+                where: filterClause,
                 attributes: ["name", "category", "priority", "expectation_date", "state"],
                 include: {
                     model: usersDetail,

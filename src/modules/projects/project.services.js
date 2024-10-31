@@ -1,4 +1,3 @@
-import { Op } from 'sequelize';
 import sequelize from '../../../dataBase/conexion.js';
 import '../../../dataBase/association.js';
 import Users from '../../../models/Model.user.js';
@@ -6,18 +5,18 @@ import usersDetail from '../../../models/Model.users_details.js';
 import Task from '../../../models/Model.tasks.js';
 import Project from '../../../models/Model.projects.js';
 import UserProject from '../../../models/Model.usersDetails_projects.js';
-
-const getCurrentDate = () => {
-    return new Date().toISOString().split('T')[0];
-};
+import { buildFilterClause } from '../../middlewares/filter.middleware.js';
+import { filterConfigs } from '../../config/filters.config.js';
 
 class ProjectServices {
 
     // Consultar todos los proyectos
     async getAllProjects (req, res) {
         try {
+            const filterClause = buildFilterClause(req.query, filterConfigs.project);
+
             const response = await Project.findAll({
-                where: Clause,
+                where: filterClause,
                 attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
                 include: [
                     {
@@ -62,16 +61,25 @@ class ProjectServices {
                 return;
             }
 
+            const filterClause = buildFilterClause(req.query, filterConfigs.project);
+
             const userDetails = await usersDetail.findOne({
-                where: { user_id: id },
+                where: filterClause,
                 attributes: ["first_name", "last_name"],
                 include: [
                     {
                         model: Project,
-                        where: Clause,
                         attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
                         through: { attributes: [] }
-                    }
+                    },
+                    {
+                        model: Task,
+                        attributes: ["name", "category", "state"],
+                        include: {
+                            model: usersDetail,
+                            attributes: ["first_name", "last_name"]
+                        }
+                    },
                 ]
             });
             
