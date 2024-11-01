@@ -244,18 +244,29 @@ class UserServices {
     }
 
     // Eliminar User
-    async delete (req, res){
-        const { id } = req.params
-        const response = await User.destroy({
-            where: { id },
-        });
-
-        res.status(200).json({
-            ok: true,
-            status: 200,
-            message: 'User deleted',
-            data: response
-        })
+    async delete(req, res) {
+        const { id } = req.params;
+        try {
+            const user = await User.findByPk(id);
+            if (!user) {
+                return res.status(404).json({
+                    ok: false,
+                    message: 'User not found'
+                });
+            }
+            await user.destroy();
+            res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'User deleted successfully'
+            });
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                message: 'Error deleting User',
+                error: error.message
+            });
+        }
     }
 }
 

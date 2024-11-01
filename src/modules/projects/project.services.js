@@ -205,18 +205,29 @@ class ProjectServices {
     }
 
     // Eliminar proyecto
-    async deleteProject(req, res){
-        const { id } = req.params
-        const response = await Project.destroy({
-            where: { id },
-        });
-
-        res.status(200).json({
-            ok: true,
-            status: 200,
-            message: 'Project deleted',
-            data: response
-        })
+    async delete(req, res) {
+        const { id } = req.params;
+        try {
+            const project = await Project.findByPk(id);
+            if (!project) {
+                return res.status(404).json({
+                    ok: false,
+                    message: 'project not found'
+                });
+            }
+            await project.destroy();
+            res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'project deleted successfully'
+            });
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                message: 'Error deleting project',
+                error: error.message
+            });
+        }
     }
 }
 

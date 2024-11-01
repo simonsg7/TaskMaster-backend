@@ -179,19 +179,30 @@ class TaskServices {
         }
     }
 
-    // Eliminar User
-    async delete(req, res){
-        const { id } = req.params
-        const response = await Task.destroy({
-            where: { id },
-        });
-
-        res.status(200).json({
-            ok: true,
-            status: 200,
-            message: 'Task deleted',
-            data: response
-        })
+    // Eliminar Task
+    async delete(req, res) {
+        const { id } = req.params;
+        try {
+            const task = await Task.findByPk(id);
+            if (!task) {
+                return res.status(404).json({
+                    ok: false,
+                    message: 'Task not found'
+                });
+            }
+            await task.destroy();
+            res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Task deleted successfully'
+            });
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                message: 'Error deleting task',
+                error: error.message
+            });
+        }
     }
 }
 
