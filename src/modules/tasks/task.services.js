@@ -180,7 +180,7 @@ class TaskServices {
     }
 
     // Eliminar Task
-    async delete(req, res) {
+    async deleteTask(req, res) {
         const { id } = req.params;
         try {
             const task = await Task.findByPk(id);

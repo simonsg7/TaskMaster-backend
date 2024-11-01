@@ -244,7 +244,7 @@ class UserServices {
     }
 
     // Eliminar User
-    async delete(req, res) {
+    async deleteUser(req, res) {
         const { id } = req.params;
         try {
             const user = await User.findByPk(id);

@@ -13,6 +13,6 @@ router.post('/create', objUser.create);
 router.get('/all', verifyToken, objUser.getAll);
 router.get('/byid/:id', verifyToken, objUser.getById);
 router.put('/update/:id', verifyToken, objUser.update);
-router.delete('/delete/:id', verifyToken, objUser.delete);
+router.delete('/delete/:id', verifyToken, objUser.deleteUser);
 
 export default router;
