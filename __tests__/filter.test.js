@@ -3,11 +3,10 @@ import app from '../app.js';
 import { buildFilterClause } from '../src/middlewares/filter.middleware.js';
 import { filterConfigs } from '../src/config/filters.config.js';
 
-const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMwNWEyNWJlLWRlODEtNDgzOS05NGRiLTc0ZjE5Nzg2ZmFkMiIsImVtYWlsIjoiamltZW5hQGVtYWlsLmNvbSIsImlhdCI6MTczMDE0MjQ3MX0.7mrHlqwydVJlK9Pgofu5Mzj2MQR630k6t40vcg7p4Qg';
 
 describe('Filter System Tests', () => {
     
-    // Test del middleware buildFilterClause
     describe('buildFilterClause Middleware', () => {
         test('should create correct filter for text search', () => {
             const query = { name: 'test' };
@@ -35,7 +34,7 @@ describe('Filter System Tests', () => {
         });
     });
 
-    // Test de integración para los endpoints
+    // Test de endpoints
     describe('API Endpoints with Filters', () => {
         // Test para el endpoint de tareas
         test('GET /tasks/all should filter tasks correctly', async () => {
