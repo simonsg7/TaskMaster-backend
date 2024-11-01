@@ -205,7 +205,7 @@ class ProjectServices {
     }
 
     // Eliminar proyecto
-    async delete(req, res) {
+    async deleteProject(req, res) {
         const { id } = req.params;
         try {
             const project = await Project.findByPk(id);
