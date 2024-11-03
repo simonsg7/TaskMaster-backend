@@ -29,7 +29,6 @@ export const filterConfigs = {
     },
     user: {
         email: { type: 'like' },
-        'users_detail.first_name': { type: 'like' },
-        'users_detail.last_name': { type: 'like' }
+        name: { type: 'like' },
     }
 };

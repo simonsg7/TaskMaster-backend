@@ -42,6 +42,7 @@ class UserServices {
     // Consultar uno
     async getById (req, res){
         const {id} = req.params
+        
         const response = await User.findOne({ 
             where: { id },
             attributes: ["id", "email"],

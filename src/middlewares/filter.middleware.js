@@ -8,7 +8,14 @@ export const buildFilterClause = (query, allowedFilters) => {
             if (allowedFilters[key]) {
                 switch (allowedFilters[key].type) {
                     case 'like':
-                        clause[key] = { [Op.like]: `%${value}%` };
+                        if (key === 'name'){
+                            clause[Op.or] = [
+                                {'$users_detail.first_name$': { [Op.like]: `%${value}%` }},
+                                {'$users_detail.last_name$': { [Op.like]: `%${value}%` }}
+                            ];
+                        } else {
+                            clause[key] = { [Op.like]: `%${value}%` };
+                        }
                         break;
                         
                     case 'exact':
