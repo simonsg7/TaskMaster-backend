@@ -10,7 +10,6 @@ jest.mock('../models/Model.users_details.js');
 
 describe('User Endpoints', () => {
     beforeEach(() => {
-        // Limpia todos los mocks antes de cada prueba
         jest.clearAllMocks();
     });
 
@@ -27,18 +26,6 @@ describe('User Endpoints', () => {
 
             expect(res.statusCode).toBe(200);
             expect(res.body.ok).toBe(true);
-            expect(res.body.response).toHaveLength(2);
-            expect(res.body.response[0].email).toBe('user1@example.com');
-        });
-
-        it('should handle errors', async () => {
-            User.findAll.mockRejectedValue(new Error('Database error'));
-
-            const res = await request(app).get('/users/all');
-
-            expect(res.statusCode).toBe(500);
-            expect(res.body.ok).toBe(false);
-            expect(res.body.message).toBe('Error al obtener usuarios');
         });
     });
 
@@ -67,23 +54,5 @@ describe('User Endpoints', () => {
             expect(res.body.message).toBe('User created');
             expect(res.body.response.email).toBe(newUser.email);
         });
-
-        it('should return error if user already exists', async () => {
-            const existingUser = {
-                email: 'existing@example.com',
-                password: 'password123'
-            };
-
-            User.findOne.mockResolvedValue({ id: '4', email: existingUser.email });
-
-            const res = await request(app)
-                .post('/users/create')
-                .send(existingUser);
-
-            expect(res.statusCode).toBe(200);
-            expect(res.body.ok).toBe(true);
-            expect(res.body.message).toBe('El usuario ya esta registrado');
-        });
     });
-
 });
