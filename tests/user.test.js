@@ -1,16 +1,39 @@
 import { jest } from '@jest/globals';
 import request from 'supertest';
-import app from '../app.js';
-import User from '../models/Model.user.js';
-import usersDetail from '../models/Model.users_details.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-// Mock de los modelos de Sequelize
+dotenv.config();
+
+let app;
+let User;
+let usersDetail;
+let token;
+
+beforeAll(async () => {
+    app = (await import('../app.js')).default;
+    User = (await import('../models/Model.user.js')).default;
+    usersDetail = (await import('../models/Model.users_details.js')).default;
+    
+    // Generar un token de prueba
+    token = jwt.sign(
+        { id: '1', email: 'test@test.com' },
+        process.env.JWT_SECRET || 'test_secret'
+    );
+});
+
+afterAll(async () => {
+    // Si estás usando Sequelize, cierra la conexión
+    const sequelize = (await import('../dataBase/conexion.js')).default;
+    await sequelize.close();
+});
+
 jest.mock('../models/Model.user.js');
 jest.mock('../models/Model.users_details.js');
 
 describe('User Endpoints', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        jest.resetAllMocks();
     });
 
     describe('GET /users/all', () => {
@@ -20,12 +43,15 @@ describe('User Endpoints', () => {
                 { id: '2', email: 'user2@example.com', users_detail: { first_name: 'Jane', last_name: 'Doe' } },
             ];
 
-            User.findAll.mockResolvedValue(mockUsers);
+            User.findAll = jest.fn().mockResolvedValue(mockUsers);
 
-            const res = await request(app).get('/users/all');
+            const res = await request(app)
+                .get('/users/all')
+                .set('Authorization', `Bearer ${token}`); // Añadir el token en el header
 
             expect(res.statusCode).toBe(200);
             expect(res.body.ok).toBe(true);
+            expect(User.findAll).toHaveBeenCalled();
         });
     });
 
@@ -41,9 +67,9 @@ describe('User Endpoints', () => {
                 phone: '1234567890'
             };
 
-            User.findOne.mockResolvedValue(null);
-            User.create.mockResolvedValue({ id: '3', email: newUser.email });
-            usersDetail.create.mockResolvedValue({});
+            User.findOne = jest.fn().mockResolvedValue(null);
+            User.create = jest.fn().mockResolvedValue({ id: '3', email: newUser.email });
+            usersDetail.create = jest.fn().mockResolvedValue({});
 
             const res = await request(app)
                 .post('/users/create')
@@ -53,6 +79,9 @@ describe('User Endpoints', () => {
             expect(res.body.ok).toBe(true);
             expect(res.body.message).toBe('User created');
             expect(res.body.response.email).toBe(newUser.email);
+            expect(User.findOne).toHaveBeenCalled();
+            expect(User.create).toHaveBeenCalled();
+            expect(usersDetail.create).toHaveBeenCalled();
         });
     });
 });

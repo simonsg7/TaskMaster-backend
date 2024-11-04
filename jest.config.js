@@ -1,9 +1,12 @@
 export default {
-    testEnvironment: 'node',
+    testEnvironment: "node",
     transform: {},
     moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
+        "^(\\.{1,2}/.*)\\.js$": "$1"
     },
-    testMatch: ['**/tests/**/*.test.js'],
-    coveragePathIgnorePatterns: ['/node_modules/'],
-}
+    testMatch: [
+        "**/tests/**/*.js",
+        "**/?(*.)+(spec|test).js"
+    ],
+    verbose: true
+};
