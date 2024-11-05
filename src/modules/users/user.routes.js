@@ -5,11 +5,6 @@ import { verifyToken } from '../../middlewares/auth.middleware.js';
 const router = express.Router();
 const objUser = new UserServices();
 
-// Rutas públicas
-router.post('/login', objUser.login);
-router.post('/create', objUser.create);
-
-// Rutas protegidas
 router.get('/all', verifyToken, objUser.getAll);
 router.get('/byid/:id', verifyToken, objUser.getById);
 router.put('/update/:id', verifyToken, objUser.update);
