@@ -1,11 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { Op } from 'sequelize';
 import sequelize from '../../../dataBase/conexion.js';
 import User from '../../../models/Model.user.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import '../../../dataBase/association.js';
+import { buildFilterClause } from '../../middlewares/filter.middleware.js';
+import { filterConfigs } from '../../config/filters.config.js';
 
 dotenv.config();
 
@@ -14,30 +15,13 @@ class UserServices {
     // Consultar todo
     async getAll (req, res){
         try {
-            const { name, email } = req.query;
-            
-            let emailClause = {};
-            let nameClause = {};
-    
-            if (email) {
-                emailClause.email = { [Op.like]: `%${email}%` };
-            }
-    
-            if (name) {
-                nameClause = {
-                    [Op.or]: [
-                        { first_name: { [Op.like]: `%${name}%` }},
-                        { last_name: { [Op.like]: `%${name}%` }}
-                    ]
-                };
-            }
-    
+            const filterClause = buildFilterClause(req.query, filterConfigs.user);
+
             const response = await User.findAll({
-                where: emailClause,
+                where: filterClause,
                 attributes: ["id", "email"],
                 include: {
                     model: usersDetail,
-                    where: Object.keys(nameClause).length > 0 ? nameClause : undefined,
                     attributes: ["first_name", "last_name", "phone"],
                 },
             });
@@ -58,6 +42,7 @@ class UserServices {
     // Consultar uno
     async getById (req, res){
         const {id} = req.params
+        
         const response = await User.findOne({ 
             where: { id },
             attributes: ["id", "email"],
@@ -260,18 +245,29 @@ class UserServices {
     }
 
     // Eliminar User
-    async delete (req, res){
-        const { id } = req.params
-        const response = await User.destroy({
-            where: { id },
-        });
-
-        res.status(200).json({
-            ok: true,
-            status: 200,
-            message: 'User deleted',
-            data: response
-        })
+    async deleteUser(req, res) {
+        const { id } = req.params;
+        try {
+            const user = await User.findByPk(id);
+            if (!user) {
+                return res.status(404).json({
+                    ok: false,
+                    message: 'User not found'
+                });
+            }
+            await user.destroy();
+            res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'User deleted successfully'
+            });
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                message: 'Error deleting User',
+                error: error.message
+            });
+        }
     }
 }
 

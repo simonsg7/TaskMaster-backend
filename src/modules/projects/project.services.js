@@ -1,4 +1,3 @@
-import { Op } from 'sequelize';
 import sequelize from '../../../dataBase/conexion.js';
 import '../../../dataBase/association.js';
 import Users from '../../../models/Model.user.js';
@@ -6,45 +5,18 @@ import usersDetail from '../../../models/Model.users_details.js';
 import Task from '../../../models/Model.tasks.js';
 import Project from '../../../models/Model.projects.js';
 import UserProject from '../../../models/Model.usersDetails_projects.js';
-
-const getCurrentDate = () => {
-    return new Date().toISOString().split('T')[0];
-};
+import { buildFilterClause } from '../../middlewares/filter.middleware.js';
+import { filterConfigs } from '../../config/filters.config.js';
 
 class ProjectServices {
 
     // Consultar todos los proyectos
     async getAllProjects (req, res) {
         try {
-            const { name, priority, state, category, expectation_date_start, expectation_date } = req.query;
-            
-            let Clause = {};
-            if (name) {
-                Clause.name = { [Op.like]: `%${name}%` };
-            }
-            if (priority) {
-                Clause.priority = priority;
-            }
-            if (state) {
-                Clause.state = state;
-            }
-            if (category) {
-                Clause.category = category;
-            }
-
-            const startDate = expectation_date_start || getCurrentDate();
-            if (expectation_date) {
-                Clause.expectation_date = {
-                    [Op.between]: [startDate, expectation_date]
-                };
-            } else {
-                Clause.expectation_date = {
-                    [Op.gte]: startDate
-                };
-            }
+            const filterClause = buildFilterClause(req.query, filterConfigs.project);
 
             const response = await Project.findAll({
-                where: Clause,
+                where: filterClause,
                 attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
                 include: [
                     {
@@ -79,7 +51,6 @@ class ProjectServices {
     async getProjectsByUserId (req, res) {
         try {
             const { id } = req.params;
-            const { name, category, priority, state, expectation_date_start, expectation_date } = req.query;
 
             const user = await Users.findOne({
                 where: { id }
@@ -90,41 +61,25 @@ class ProjectServices {
                 return;
             }
 
-            let Clause = {};
-            if (name) {
-                Clause.name = { [Op.like]: `%${name}%` };
-            }
-            if (category) {
-                Clause.category = category;
-            }
-            if (priority) {
-                Clause.priority = priority;
-            }
-            if (state) {
-                Clause.state = state;
-            }
-
-            const startDate = expectation_date_start || getCurrentDate();
-            if (expectation_date) {
-                Clause.expectation_date = {
-                    [Op.between]: [startDate, expectation_date]
-                };
-            } else {
-                whereClause.expectation_date = {
-                    [Op.gte]: startDate
-                };
-            }
+            const filterClause = buildFilterClause(req.query, filterConfigs.project);
 
             const userDetails = await usersDetail.findOne({
-                where: { user_id: id },
+                where: filterClause,
                 attributes: ["first_name", "last_name"],
                 include: [
                     {
                         model: Project,
-                        where: Clause,
                         attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
                         through: { attributes: [] }
-                    }
+                    },
+                    {
+                        model: Task,
+                        attributes: ["name", "category", "state"],
+                        include: {
+                            model: usersDetail,
+                            attributes: ["first_name", "last_name"]
+                        }
+                    },
                 ]
             });
             
@@ -250,18 +205,29 @@ class ProjectServices {
     }
 
     // Eliminar proyecto
-    async deleteProject(req, res){
-        const { id } = req.params
-        const response = await Project.destroy({
-            where: { id },
-        });
-
-        res.status(200).json({
-            ok: true,
-            status: 200,
-            message: 'Project deleted',
-            data: response
-        })
+    async deleteProject(req, res) {
+        const { id } = req.params;
+        try {
+            const project = await Project.findByPk(id);
+            if (!project) {
+                return res.status(404).json({
+                    ok: false,
+                    message: 'project not found'
+                });
+            }
+            await project.destroy();
+            res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'project deleted successfully'
+            });
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                message: 'Error deleting project',
+                error: error.message
+            });
+        }
     }
 }
 

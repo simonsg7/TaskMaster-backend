@@ -1,47 +1,19 @@
-import { Op } from 'sequelize';
 import Task from '../../../models/Model.tasks.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import Users from '../../../models/Model.user.js'
 import '../../../dataBase/association.js';
-
-const getCurrentDate = () => {
-    return new Date().toISOString().split('T')[0];
-};
+import { buildFilterClause } from '../../middlewares/filter.middleware.js';
+import { filterConfigs } from '../../config/filters.config.js';
 
 class TaskServices {
 
     // Consultar todo
     async getAllTasks(req, res) {
         try {
-            const { name, priority, state, category, expectation_date_start, expectation_date } = req.query;
-            
-            let Clause = {};
-            if (name) {
-                Clause.name = { [Op.like]: `%${name}%` };
-            }
-            if (priority) {
-                Clause.priority = priority;
-            }
-            if (state) {
-                Clause.state = state;
-            }
-            if (category) {
-                Clause.category = category;
-            }
-    
-            const startDate = expectation_date_start || getCurrentDate();
-            if (expectation_date) {
-                Clause.expectation_date = {
-                    [Op.between]: [startDate, expectation_date]
-                };
-            } else {
-                Clause.expectation_date = {
-                    [Op.gte]: startDate
-                };
-            }
+            const filterClause = buildFilterClause(req.query, filterConfigs.task);
 
             const response = await Task.findAll({
-                where: Clause,
+                where: filterClause,
                 attributes: ["name", "category", "priority", "expectation_date", "state"],
                 include: {
                     model: usersDetail,
@@ -65,7 +37,6 @@ class TaskServices {
     async getAllTasksByUserId(req, res) {
         try {
             const { id } = req.params;
-            const { name, priority, state, category, expectation_date_start, expectation_date } = req.query;
             
             const user = await Users.findOne({
                 where: { id }
@@ -89,35 +60,11 @@ class TaskServices {
                 });
             }
             
-            let Clause = {
-                user_detail_id: userDetail.id
-            };
-            if (name) {
-                Clause.name = { [Op.like]: `%${name}%` };
-            }
-            if (priority) {
-                Clause.priority = priority;
-            }
-            if (state) {
-                Clause.state = state;
-            }
-            if (category) {
-                Clause.category = category;
-            }
+            const filterClause = buildFilterClause(req.query, filterConfigs.task);
+            filterClause.user_detail_id = userDetail.id;
 
-            const startDate = expectation_date_start || getCurrentDate();
-            if (expectation_date) {
-                Clause.expectation_date = {
-                    [Op.between]: [startDate, expectation_date]
-                };
-            } else {
-                Clause.expectation_date = {
-                    [Op.gte]: startDate
-                };
-            }
-            
             const response = await Task.findAll({
-                where: Clause,
+                where: filterClause,
                 attributes: ["name", "category", "priority", "expectation_date", "state"],
                 include: {
                     model: usersDetail,
@@ -232,19 +179,30 @@ class TaskServices {
         }
     }
 
-    // Eliminar User
-    async delete(req, res){
-        const { id } = req.params
-        const response = await Task.destroy({
-            where: { id },
-        });
-
-        res.status(200).json({
-            ok: true,
-            status: 200,
-            message: 'Task deleted',
-            data: response
-        })
+    // Eliminar Task
+    async deleteTask(req, res) {
+        const { id } = req.params;
+        try {
+            const task = await Task.findByPk(id);
+            if (!task) {
+                return res.status(404).json({
+                    ok: false,
+                    message: 'Task not found'
+                });
+            }
+            await task.destroy();
+            res.status(200).json({
+                ok: true,
+                status: 200,
+                message: 'Task deleted successfully'
+            });
+        } catch (error) {
+            res.status(500).json({
+                ok: false,
+                message: 'Error deleting task',
+                error: error.message
+            });
+        }
     }
 }
 

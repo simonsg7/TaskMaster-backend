@@ -15,6 +15,6 @@ router.post('/create', verifyToken, objTask.create);
 
 router.put('/update/:id', verifyToken, objTask.update);
 
-router.delete('/delete/:id', verifyToken, objTask.delete);
+router.delete('/delete/:id', verifyToken, objTask.deleteTask);
 
 export default router;
