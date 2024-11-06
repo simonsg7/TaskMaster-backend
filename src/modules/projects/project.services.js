@@ -5,7 +5,7 @@ import usersDetail from '../../../models/Model.users_details.js';
 import Task from '../../../models/Model.tasks.js';
 import Project from '../../../models/Model.projects.js';
 import UserProject from '../../../models/Model.usersDetails_projects.js';
-import { buildFilterClause } from '../../middlewares/filter.middleware.js';
+import { filterClause } from '../../middlewares/filter.middleware.js';
 import { filterConfigs } from '../../config/filters.config.js';
 
 class ProjectServices {
@@ -13,10 +13,10 @@ class ProjectServices {
     // Consultar todos los proyectos
     async getAllProjects (req, res) {
         try {
-            const filterClause = buildFilterClause(req.query, filterConfigs.project);
+            const filClause = filterClause(req.query, filterConfigs.project);
 
             const response = await Project.findAll({
-                where: filterClause,
+                where: filClause,
                 attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
                 include: [
                     {
@@ -61,10 +61,10 @@ class ProjectServices {
                 return;
             }
 
-            const filterClause = buildFilterClause(req.query, filterConfigs.project);
+            const filClause = filterClause(req.query, filterConfigs.project);
 
             const userDetails = await usersDetail.findOne({
-                where: filterClause,
+                where: filClause,
                 attributes: ["first_name", "last_name"],
                 include: [
                     {

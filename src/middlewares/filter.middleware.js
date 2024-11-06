@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 
-export const buildFilterClause = (query, allowedFilters) => {
+export const filterClause = (query, allowedFilters) => {
     try {
         const clause = {};
         

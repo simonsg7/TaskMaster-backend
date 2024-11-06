@@ -5,7 +5,7 @@ import sequelize from '../../../dataBase/conexion.js';
 import User from '../../../models/Model.user.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import '../../../dataBase/association.js';
-import { buildFilterClause } from '../../middlewares/filter.middleware.js';
+import { filterClause } from '../../middlewares/filter.middleware.js';
 import { filterConfigs } from '../../config/filters.config.js';
 
 dotenv.config();
@@ -15,10 +15,10 @@ class UserServices {
     // Consultar todo
     async getAll (req, res){
         try {
-            const filterClause = buildFilterClause(req.query, filterConfigs.user);
+            const filClause = filterClause(req.query, filterConfigs.user);
 
             const response = await User.findAll({
-                where: filterClause,
+                where: filClause,
                 attributes: ["id", "email"],
                 include: {
                     model: usersDetail,
