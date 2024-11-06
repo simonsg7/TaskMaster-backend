@@ -26,10 +26,24 @@ export const sendPasswordResetEmail = async (email, resetToken) => {
             <p>Has solicitado restablecer tu contraseña.</p>
             <p>Haz clic en el siguiente enlace para crear una nueva contraseña:</p>
             <a href="${resetLink}">Restablecer contraseña</a>
-            <p>Este enlace expirará en 1 hora.</p>
+            <p>Este enlace expirará en 15 minutos.</p>
             <p>Si no solicitaste este cambio, puedes ignorar este correo.</p>
         `
     };
 
-    return sendEmail(mailOptions);
+    try {
+        const info = await transporter.sendMail(mailOptions);
+        return {
+            success: true,
+            messageId: info.messageId,
+            response: info.response,
+            envelope: info.envelope
+        };
+    } catch (error) {
+        console.error('Error sending email:', error);
+        return {
+            success: false,
+            error: error.message
+        };
+    }
 };
