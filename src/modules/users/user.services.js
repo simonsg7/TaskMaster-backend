@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import sequelize from '../../../dataBase/conexion.js';
 import User from '../../../models/Model.user.js';

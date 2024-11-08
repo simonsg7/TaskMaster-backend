@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
 import dotenv from 'dotenv';
 import User from '../../../models/Model.user.js';
 import usersDetail from '../../../models/Model.users_details.js';
@@ -130,13 +129,14 @@ class AuthServices {
                 });
             }
 
-            const resetToken = crypto.randomBytes(32).toString('hex');
-            const resetTokenExpires = new Date(Date.now() + 900000);
-
-            await user.update({
-                reset_token: resetToken,
-                reset_token_expires: resetTokenExpires
-            });
+            const resetToken = jwt.sign (
+                {
+                    id: user.id,
+                    email: user.email
+                },
+                process.env.JWT_RESET_SECRET,
+                { expiresIn: '15m' }
+            );
 
             const emailSent = await sendPasswordResetEmail(email, resetToken);
 
@@ -163,12 +163,12 @@ class AuthServices {
         const { token, newPassword } = req.body;
 
         try {
+            const decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
+
             const user = await User.findOne({
                 where: {
-                    reset_token: token,
-                    reset_token_expires: {
-                        [Op.gt]: new Date()
-                    }
+                    id: decoded.id,
+                    email: decoded.email
                 }
             });
 
@@ -183,9 +183,7 @@ class AuthServices {
             const passwordHash = bcrypt.hashSync(newPassword, salt);
 
             await user.update({
-                password: passwordHash,
-                reset_token: null,
-                reset_token_expires: null
+                password: passwordHash
             });
 
             res.status(200).json({
@@ -194,6 +192,13 @@ class AuthServices {
             });
 
         } catch (error) {
+            if (error.name === 'TokenExpiredError') {
+                return res.status(400).json({
+                    ok: false,
+                    message: 'El token ha expirado'
+                });
+            }
+
             res.status(500).json({
                 ok: false,
                 message: 'Error al restablecer la contraseña',
