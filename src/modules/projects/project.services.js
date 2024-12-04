@@ -70,15 +70,17 @@ class ProjectServices {
                     {
                         model: Project,
                         attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
-                        through: { attributes: [] }
-                    },
-                    {
-                        model: Task,
-                        attributes: ["name", "category", "state"],
-                        include: {
-                            model: usersDetail,
-                            attributes: ["first_name", "last_name"]
-                        }
+                        through: { attributes: [] },
+                        include: [
+                            {
+                                model: Task,
+                                attributes: ["name", "category", "state"],
+                                include: {
+                                    model: usersDetail,
+                                    attributes: ["first_name", "last_name"]
+                                }
+                            },
+                        ]
                     },
                 ]
             });
