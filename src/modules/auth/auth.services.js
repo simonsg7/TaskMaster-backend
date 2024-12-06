@@ -26,7 +26,7 @@ class AuthServices {
             if (!user) {
                 return res.status(404).json({
                     ok: false,
-                    message: 'Usuario no encontrado'
+                    message: 'Usuario y/o contraseña inválidos'
                 });
             }
 
@@ -34,7 +34,7 @@ class AuthServices {
             if (!validPassword) {
                 return res.status(401).json({
                     ok: false,
-                    message: 'Contraseña incorrecta'
+                    message: 'Usuario y/o contraseña inválidos'
                 });
             }
 
