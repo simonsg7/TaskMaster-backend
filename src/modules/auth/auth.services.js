@@ -50,7 +50,8 @@ class AuthServices {
                 ok: true,
                 user: {
                     first_name: user.users_detail?.first_name,
-                    last_name: user.users_detail?.last_name
+                    last_name: user.users_detail?.last_name,
+                    email: user.email,
                 },
                 token
             });
