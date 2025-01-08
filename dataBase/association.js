@@ -70,7 +70,7 @@ Project.belongsToMany(usersDetail, {
 
 // const createTables = async () => {
     // await Project.sync({ force: true }) //Crea o modifica, la tabla
-    // await sequelize.sync({ force: true }) //Crea las tablas
-// }  // alter: true; es para modificar las tablas creadas, force: true; borrar y crear; cambiar y (vació); crea si no existe 
+    // await usersDetail.sync({ alter: true }) //Crea las tablas
+// }  // alter: true; es para modificar las tablas creadas, force: true; borrar, crear, cambiar; y (vació); crea si no existe 
 
 // export default createTables;

@@ -51,7 +51,7 @@ class AuthServices {
                 user: {
                     first_name: user.users_detail?.first_name,
                     last_name: user.users_detail?.last_name,
-                    email: user.email,
+                    id: user.id,
                 },
                 token
             });
@@ -79,9 +79,11 @@ class AuthServices {
                     const passwordHash = bcrypt.hashSync(password, salt); // Encripta la contraseña
                     
                     const createUser = await User.create({ email, password: passwordHash }, { transaction });
-                    await usersDetail.create({  first_name, last_name, type_document, number_document, phone, user_id: createUser.id }, { transaction });
+                    const imageUrl = `https://res.cloudinary.com/dm0g4d64z/image/upload/${createUser.id}`;
 
-                    const token = jwt.sign( // Genera token
+                    await usersDetail.create({ first_name, last_name, type_document, number_document, phone, user_id: createUser.id, image_url: imageUrl }, { transaction });
+
+                    const token = jwt.sign(          // Genera token
                         { 
                             id: createUser.id,
                             email: createUser.email
