@@ -19,7 +19,7 @@ class AuthServices {
                 where: { email },
                 include: {
                     model: usersDetail,
-                    attributes: ['first_name', 'last_name']
+                    attributes: ['first_name', 'last_name', 'image_url']
                 }
             });
 
@@ -49,9 +49,10 @@ class AuthServices {
             res.status(200).json({
                 ok: true,
                 user: {
+                    id: user.id,
                     first_name: user.users_detail?.first_name,
                     last_name: user.users_detail?.last_name,
-                    id: user.id,
+                    image_url: user.users_detail?.image_url
                 },
                 token
             });
@@ -97,7 +98,9 @@ class AuthServices {
                         ok: true,
                         message: 'User created',
                         response: createUser,
-                        token
+                        token,
+                        user_id,
+                        imageUrl
                     });
                 } catch (error) {
                     await transaction.rollback();

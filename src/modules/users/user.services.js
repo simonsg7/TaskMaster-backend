@@ -47,7 +47,7 @@ class UserServices {
             attributes: ["id", "email"],
             include: {
                 model: usersDetail,
-                attributes: [ "first_name", "last_name", "phone" ],
+                attributes: [ "first_name", "last_name", "image_url" ],
             },
         });
         

@@ -1,6 +1,7 @@
 import Task from '../../../models/Model.tasks.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import Users from '../../../models/Model.user.js'
+import Project from '../../../models/Model.projects.js'
 import '../../../dataBase/association.js';
 import { filterClause } from '../../middlewares/filter.middleware.js';
 import { filterConfigs } from '../../config/filters.config.js';
@@ -15,10 +16,21 @@ class TaskServices {
             const response = await Task.findAll({
                 where: filClause,
                 attributes: ["name", "category", "priority", "expectation_date", "state"],
-                include: {
-                    model: usersDetail,
-                    attributes: ["first_name", "last_name"]
-                }
+                include: [
+                    {
+                        model: usersDetail,
+                        attributes: [ "first_name", "last_name" ]
+                    },
+                    {
+                        model: Project,
+                        attributes: [ "name" ],
+                        include: {
+                            model: usersDetail,
+                            attributes: [ "first_name", "last_name" ],
+                            through: { attributes: [] }
+                        }
+                    }
+                ]
             });
             
             res.status(200).json({
@@ -66,10 +78,21 @@ class TaskServices {
             const response = await Task.findAll({
                 where: filClause,
                 attributes: ["name", "category", "priority", "expectation_date", "state"],
-                include: {
-                    model: usersDetail,
-                    attributes: ["first_name", "last_name"]
-                }
+                include: [
+                    {
+                        model: usersDetail,
+                        attributes: [ "first_name", "last_name" ]
+                    },
+                    {
+                        model: Project,
+                        attributes: [ "name" ],
+                        include: {
+                            model: usersDetail,
+                            attributes: [ "first_name", "last_name" ],
+                            through: { attributes: [] }
+                        }
+                    }
+                ]
             });
             
             res.status(200).json({
@@ -111,10 +134,21 @@ class TaskServices {
         const task = await Task.findOne({
             where: { id: task_id, user_detail_id: userDetail.id },
             attributes: [ "name", "category", "priority", "expectation_date", "state" ],
-            include: {
-                model: usersDetail,
-                attributes: [ "first_name", "last_name" ]
-            }
+            include: [
+                {
+                    model: usersDetail,
+                    attributes: [ "first_name", "last_name" ]
+                },
+                {
+                    model: Project,
+                    attributes: [ "name" ],
+                    include: {
+                        model: usersDetail,
+                        attributes: [ "first_name", "last_name" ],
+                        through: { attributes: [] }
+                    }
+                }
+            ]
         });
     
         if (!task) {
