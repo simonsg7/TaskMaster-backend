@@ -69,12 +69,12 @@ class ProjectServices {
                 include: [
                     {
                         model: Project,
-                        attributes: ["name", "category", "priority", "expectation_date", "state", "description"],
+                        attributes: ["id", "name", "category", "priority", "expectation_date", "state", "description"],
                         through: { attributes: [] },
                         include: [
                             {
                                 model: Task,
-                                attributes: ["name", "category", "state"],
+                                attributes: ["id", "name", "category", "description", "state"],
                                 include: {
                                     model: usersDetail,
                                     attributes: ["first_name", "last_name"]
@@ -89,9 +89,7 @@ class ProjectServices {
                 return res.status(404).json({ message: "Detalles del usuario no encontrados." });
             }
             
-            res.status(200).json([
-                userDetails
-            ]);
+            res.status(200).json([ userDetails ]);
         } catch (error) {
             res.status(500).json({
                 message: 'Error al obtener los proyectos del usuario',
@@ -132,7 +130,6 @@ class ProjectServices {
             res.status(500).json({ error: error.message });
         }
     }
-
 
     // Crear proyecto
     async create(req, res) {
