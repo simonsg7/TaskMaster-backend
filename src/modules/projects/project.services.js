@@ -74,7 +74,7 @@ class ProjectServices {
                         include: [
                             {
                                 model: Task,
-                                attributes: ["id", "name", "category", "description", "expectation_date", "state"],
+                                attributes: ["id", "name", "category", "description", "priority", "expectation_date", "state"],
                                 include: {
                                     model: usersDetail,
                                     attributes: ["first_name", "last_name"]
