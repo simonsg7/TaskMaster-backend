@@ -18,6 +18,10 @@ Project.init({
         values: [ 'Trabajo', 'Personal', 'Estudio', 'Finanzas', 'Salud y bienestar', 'Viajes', 'Hogar', 'Social' ],
         allowNull: false
     },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
     priority: {
         type: DataTypes.ENUM,
         values: ['Alta', 'Media', 'Baja'],
@@ -31,10 +35,6 @@ Project.init({
         type: DataTypes.ENUM,
         values: ['Diario', 'Pendiente', 'En progreso', 'Completo'],
         allowNull: false
-    },
-    description: {
-        type: DataTypes.TEXT,
-        allowNull: true
     },
 }, {
     sequelize,
