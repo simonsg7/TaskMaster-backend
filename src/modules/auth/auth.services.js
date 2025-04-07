@@ -19,7 +19,7 @@ class AuthServices {
                 where: { email },
                 include: {
                     model: usersDetail,
-                    attributes: ['first_name', 'last_name', 'image_url']
+                    attributes: ['id', 'first_name', 'last_name', 'image_url']
                 }
             });
 
@@ -50,6 +50,7 @@ class AuthServices {
                 ok: true,
                 user: {
                     id: user.id,
+                    user_detail_id: user.users_detail?.id,
                     first_name: user.users_detail?.first_name,
                     last_name: user.users_detail?.last_name,
                     image_url: user.users_detail?.image_url
@@ -82,7 +83,7 @@ class AuthServices {
                     const createUser = await User.create({ email, password: passwordHash }, { transaction });
                     const imageUrl = `https://res.cloudinary.com/dm0g4d64z/image/upload/${createUser.id}`;
 
-                    await usersDetail.create({ first_name, last_name, type_document, number_document, phone, user_id: createUser.id, image_url: imageUrl }, { transaction });
+                    const createUserDetail = await usersDetail.create({ first_name, last_name, type_document, number_document, phone, user_id: createUser.id, image_url: imageUrl }, { transaction });
 
                     const token = jwt.sign(          // Genera token
                         { 
@@ -99,7 +100,7 @@ class AuthServices {
                         message: 'User created',
                         response: createUser,
                         token,
-                        user_id,
+                        user_detail_id: createUserDetail.id,
                         imageUrl
                     });
                 } catch (error) {
