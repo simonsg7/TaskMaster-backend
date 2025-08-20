@@ -163,10 +163,10 @@ class TaskServices {
 
     // Crear Task
     create(req, res){
-        const { name, category, priority, expectation_date, state, user_detail_id } = req.body
+        const { name, category, priority, expectation_date, state, user_detail_id, project_id } = req.body
         
         try {
-            Task.create({ name, category, priority, expectation_date, state, user_detail_id });
+            Task.create({ name, category, priority, expectation_date, state, user_detail_id, project_id });
 
             res.status(201).json({
                 ok: true,
