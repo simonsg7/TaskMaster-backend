@@ -15,7 +15,7 @@ class TaskServices {
 
             const response = await Task.findAll({
                 where: filClause,
-                attributes: ["name", "category", "priority", "expectation_date", "state"],
+                attributes: ["id", "name", "category", "priority", "expectation_date", "state"],
                 include: [
                     {
                         model: usersDetail,
