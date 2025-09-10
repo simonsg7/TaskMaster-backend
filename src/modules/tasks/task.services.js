@@ -186,7 +186,7 @@ class TaskServices {
     // Actualizar Task
     async update(req, res) {
         const { id } = req.params;
-        const { name, category, priority, expectation_date, state } = req.body;
+        const { name, category, priority, expectation_date, description, state } = req.body;
 
         try {
             const task = await Task.findOne({ where: { id } });
@@ -196,7 +196,7 @@ class TaskServices {
             }
 
             await Task.update(
-                { name, category, priority, expectation_date, state },
+                { name, category, priority, expectation_date, description, state },
                 { where: { id } }
             );
 
