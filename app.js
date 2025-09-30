@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import routers from './router/index.js';
-// import createTables from './dataBase/association.js';
+import createTables from './dataBase/association.js';
 
 const app = express();
 
@@ -15,6 +15,6 @@ app.use(cors({
 
 routers(app);
 
-// createTables();
+createTables();
 
 export default app;

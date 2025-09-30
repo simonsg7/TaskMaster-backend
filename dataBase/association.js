@@ -1,4 +1,4 @@
-// import sequelize from '../dataBase/conexion.js';
+import sequelize from '../dataBase/conexion.js';
 import User from '../models/Model.user.js';
 import usersDetail from '../models/Model.users_details.js';
 import Task from '../models/Model.tasks.js';
@@ -68,9 +68,9 @@ Project.belongsToMany(usersDetail, {
     onUpdate: 'CASCADE',
 });
 
-// const createTables = async () => {
+const createTables = async () => {
     // await Project.sync({ force: true }) //Crea o modifica, la tabla
-    // await usersDetail.sync({ alter: true }) //Crea las tablas
-// }  // alter: true; es para modificar las tablas creadas, force: true; borrar, crear, cambiar; y (vació); crea si no existe 
+    await sequelize.sync({ alter: true }) //Crea las tablas
+}  // alter: true; es para modificar las tablas creadas, force: true; borrar, crear, cambiar; y (vació); crea si no existe 
 
-// export default createTables;
+export default createTables;

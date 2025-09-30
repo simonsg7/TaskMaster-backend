@@ -23,7 +23,7 @@ usersDetail.init({
         allowNull: false
     },
     number_document: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: false
     },
     phone: {

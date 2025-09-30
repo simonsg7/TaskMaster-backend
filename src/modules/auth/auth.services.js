@@ -147,7 +147,7 @@ class AuthServices {
 
             const emailSent = await sendPasswordResetEmail(email, resetToken);
 
-            if (emailSent) {
+            if (emailSent.success) {
                 res.status(200).json({
                     ok: true,
                     message: 'Se ha enviado un correo con las instrucciones para recuperar tu contraseña'

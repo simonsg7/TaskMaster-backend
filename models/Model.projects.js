@@ -33,7 +33,7 @@ Project.init({
     },
     state: {
         type: DataTypes.ENUM,
-        values: ['Diario', 'Pendiente', 'En progreso', 'Completo'],
+        values: ['Diario', 'Pendiente', 'En progreso', 'Completa'],
         allowNull: false
     },
 }, {

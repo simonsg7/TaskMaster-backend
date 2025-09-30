@@ -1,10 +1,17 @@
 import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
 
-const sequelize = new Sequelize('taskmaster', 'root', '', {
-    host: 'localhost',
-    dialect: 'mysql',
-    port: '3306'
-});
+dotenv.config();
+const sequelize = new Sequelize(
+    process.env.DB_NAME, 
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
+    {
+        host: process.env.DB_HOST,
+        dialect: process.env.DB_DIALECT,
+        port: process.env.DB_PORT,
+    }
+);
 
 // //Para testear el Sequelize 
 // const testConnection = async()=>{   
