@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import routers from './router/index.js';
 // import createTables from './dataBase/association.js';
+import './dataBase/association.js'
 
 const app = express();
 

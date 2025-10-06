@@ -1,5 +1,5 @@
 import sequelize from '../../../dataBase/conexion.js';
-import '../../../dataBase/association.js';
+// import '../../../dataBase/association.js';
 import Users from '../../../models/Model.user.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import Task from '../../../models/Model.tasks.js';
