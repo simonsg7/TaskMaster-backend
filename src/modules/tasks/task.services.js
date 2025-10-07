@@ -2,7 +2,7 @@ import Task from '../../../models/Model.tasks.js';
 import usersDetail from '../../../models/Model.users_details.js';
 import Users from '../../../models/Model.user.js'
 import Project from '../../../models/Model.projects.js'
-// import '../../../dataBase/association.js';
+import '../../../dataBase/association.js';
 import { filterClause } from '../../middlewares/filter.middleware.js';
 import { filterConfigs } from '../../config/filters.config.js';
 

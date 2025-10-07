@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import sequelize from '../../../dataBase/conexion.js';
 import User from '../../../models/Model.user.js';
 import usersDetail from '../../../models/Model.users_details.js';
-// import '../../../dataBase/association.js';
+import '../../../dataBase/association.js';
 import { filterClause } from '../../middlewares/filter.middleware.js';
 import { filterConfigs } from '../../config/filters.config.js';
 
