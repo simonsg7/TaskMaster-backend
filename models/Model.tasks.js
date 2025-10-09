@@ -15,7 +15,7 @@ Task.init({
     },
     category: {
         type: DataTypes.ENUM,
-        values: [ 'Trabajo', 'Personal', 'Estudio', 'Finanzas', 'Salud y bienestar', 'Viajes', 'Hogar', 'Social' ],
+        values: [ 'trabajo', 'personal', 'estudio', 'finanzas', 'salud y bienestar', 'viajes', 'hogar', 'social' ],
         allowNull: false
     },
     description: {
@@ -24,7 +24,7 @@ Task.init({
     },
     priority: {
         type: DataTypes.ENUM,
-        values: ['Alta', 'Media', 'Baja'],
+        values: ['alta', 'media', 'baja'],
         allowNull: false
     },
     expectation_date: {
@@ -33,7 +33,7 @@ Task.init({
     },
     state: {
         type: DataTypes.ENUM,
-        values: ['Diario', 'Pendiente', 'En progreso', 'Completa'],
+        values: ['pendiente', 'en progreso', 'completo'],
         allowNull: false
     },
 }, {

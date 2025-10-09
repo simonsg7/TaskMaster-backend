@@ -81,7 +81,7 @@ class AuthServices {
                     const passwordHash = bcrypt.hashSync(password, salt); // Encripta la contraseña
                     
                     const createUser = await User.create({ email, password: passwordHash }, { transaction });
-                    const imageUrl = `https://res.cloudinary.com/dm0g4d64z/image/upload/${createUser.id}`;
+                    const imageUrl = `defaultImage`;
 
                     const createUserDetail = await usersDetail.create({ first_name, last_name, type_document, number_document, phone, user_id: createUser.id, image_url: imageUrl }, { transaction });
 
