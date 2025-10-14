@@ -59,10 +59,11 @@ class AuthServices {
             });
 
         } catch (error) {
+            console.error('Error en el servicio de login:', error);
             res.status(500).json({
                 ok: false,
                 message: 'Error en el servidor',
-                error: error.message
+                error: process.env.NODE_ENV === 'development' ? error.message : 'Internal Server Error'
             });
         }
     }
@@ -105,9 +106,11 @@ class AuthServices {
                     });
                 } catch (error) {
                     await transaction.rollback();
+                    console.error('Error durante la transacción de registro:', error);
                     throw error;
                 }
             } catch (error) {
+                console.error('Error en el servicio de registro:', error);
                 res.status(500).json({
                     ok: false,
                     message: 'Error al crear usuario',
@@ -157,6 +160,7 @@ class AuthServices {
             }
 
         } catch (error) {
+            console.error('Error al solicitar reseteo de contraseña:', error);
             res.status(500).json({
                 ok: false,
                 message: 'Error al procesar la solicitud',
@@ -206,6 +210,7 @@ class AuthServices {
                 });
             }
 
+            console.error('Error al restablecer contraseña:', error);
             res.status(500).json({
                 ok: false,
                 message: 'Error al restablecer la contraseña',
