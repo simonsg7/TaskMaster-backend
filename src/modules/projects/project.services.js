@@ -195,6 +195,7 @@ class ProjectServices {
                 message: 'Project updated successfully'
             });
         } catch (error) {
+            console.error('Error updating project:', error);
             res.status(500).json({
                 ok: false,
                 message: 'Error updating project',

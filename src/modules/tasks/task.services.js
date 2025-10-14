@@ -162,11 +162,11 @@ class TaskServices {
     }
 
     // Crear Task
-    create(req, res){
+    async create(req, res){
         const { name, category, description, priority, expectation_date, state, user_detail_id, project_id } = req.body
         
         try {
-            Task.create({ name, category, description, priority, expectation_date, state, user_detail_id, project_id });
+            await Task.create({ name, category, description, priority, expectation_date, state, user_detail_id, project_id });
 
             res.status(201).json({
                 ok: true,
@@ -174,6 +174,7 @@ class TaskServices {
                 message: 'Task created'
             });
         } catch (error) {
+            console.error('Error al crear tarea:', error);
             res.status(500).json({
                 ok: false,
                 status: 500,
