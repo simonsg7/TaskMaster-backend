@@ -64,7 +64,10 @@ class ProjectServices {
             const filClause = filterClause(req.query, filterConfigs.project);
 
             const userDetails = await usersDetail.findOne({
-                where: filClause,
+                where: {
+                    user_id: id,
+                    ...filClause,
+                },
                 attributes: ["first_name", "last_name"],
                 include: [
                     {
@@ -85,12 +88,21 @@ class ProjectServices {
                 ]
             });
             
+            // if (!userDetails) {
+            //     return res.status(404).json({ message: "Detalles del usuario no encontrados." });
+            // }
+
             if (!userDetails) {
-                return res.status(404).json({ message: "Detalles del usuario no encontrados." });
+                return res.status(200).json([{
+                    first_name: user.users_detail.first_name,
+                    last_name: user.users_detail.last_name,
+                    projects: []
+                }]);
             }
             
             res.status(200).json([ userDetails ]);
         } catch (error) {
+            console.error('Error al obtener los proyectos del usuario:', error);
             res.status(500).json({
                 message: 'Error al obtener los proyectos del usuario',
                 error: error.message
