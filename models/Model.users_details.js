@@ -20,15 +20,15 @@ usersDetail.init({
     type_document: {
         type: DataTypes.ENUM,
         values: ['C.C', 'C.E', 'T.I'],
-        allowNull: false
+        allowNull: true
     },
     number_document: {
         type: DataTypes.BIGINT,
-        allowNull: false
+        allowNull: true
     },
     phone: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     image_url: {
         type: DataTypes.STRING,
