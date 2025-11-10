@@ -16,7 +16,7 @@ Project.init({
     category: {
         type: DataTypes.ENUM,
         values: [ 'trabajo', 'personal', 'estudio', 'finanzas', 'salud y bienestar', 'viajes', 'hogar', 'social' ],
-        allowNull: false
+        allowNull: true
     },
     description: {
         type: DataTypes.TEXT,
@@ -29,7 +29,7 @@ Project.init({
     },
     expectation_date: {
         type: DataTypes.DATE,
-        allowNull: true
+        allowNull: false
     },
     state: {
         type: DataTypes.ENUM,
